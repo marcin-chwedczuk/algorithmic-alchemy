@@ -8,25 +8,164 @@
 Zanim komputery osobiste weszły do powszechnego użytku,
 proste obliczenia często wykonywano przy pomocy kalkulatorów
 mechanicznych. Szczytowym osiągnięciem techniki z tego okresu
-czasu jest Curta - przenośny kalkulator mechaniczny niewielkich rozmiarów.
+czasu jest Curta - kieszonkowy kalkulator mechaniczny.
+Kalkulator ten pozwalał na wykonanie jedynie dwóch operacji,
+wyzerowania licznika i dodania liczby (wybieranej za pomocą
+zestawu suwaków umieszczonych na ścianach urządzenia) do licznika.
 
 % TODO: Zdjęcie curty
 
-Kalkulatory mechaniczne często zawierały w sobie mechanizm
-podobny do tego jaki znamy z analogowych wodomierzy czy hodometrów.
-Jeżeli trzy cyfrowy kalkulator pokazywał by liczbę 998 to 
-dodanie do niej dwukrotnie liczby jeden da nam kolejno wyniki 999 i 0.
+
+Kalkulatory mechaniczne często zawierały w sobie mechaniczne
+liczniki podobne do tych jakie znamy z analogowych wodomierzy czy hodometrów.
+Liczniki takie zbudowane są z zestawu cylindrów, oraz przekładni
+połączonych w taki sposób że przejście pomiędzy cyfrą dziewięć a zero
+wymuszą ruch kolejnego cylindra.
+% TODO: https://woodgears.ca/counter/
+
+Ponieważ liczniki mechaniczne mają ograniczony zakres, np. licznik
+składający się z trzech cylindrów może reprezentować jedynie liczby od 000 do 999,
+to występuje w nich zjawisko nadmiaru (ang. overflow).
+Oznacza to, że po osiągnięciu liczby 999 licznik "wraca" do liczby 000.
+Okazuje się że to zjawisko ma bardzo ciekawe matematyczne konsekwencje.
 
 % TODO Foto 998 -> 999 -> 000
 
-% TODO: https://woodgears.ca/counter/
-Zjawisko to określamy mianem nadmiaru (ang. overflow) i
-wynika ono wprost z budowy naszego kalkulatora.
+Zastanówmy się kiedy obliczenia prowadzone na kalkulatorze mechanicznym,
+który bazuje na mechaniźmie licznika mechanicznego są poprawne.
+Oczywistym jest że obliczenie będzie poprawne jeżeli w jego trakcie
+nie wystąpi nadmiar. A co się stanie gdy nadmiar wystąpi, czy wynik
+jest wtedy zupełnie pozbawiony sensu? Okazuje się że wręcz przeciwnie,
+bo wyświetlacz kalkulatora zawsze prezentuje trzy ostatnie cyfry obliczanej sumy.
 
-A skoro już jesteśmy przy temacie dodawania, 
-to warto wspomnieć że była to jedyna operacja
-którą takie kalkulatory były w stanie wykonywać.
+Ubierając to w język matematyki, możemy powiedzieć że kalkulator daje
+wynik który jest równy prawdziwej sumie wprowadzonych liczb modulo N.
+Wyrażenie "K modulo N" oznacza że chodzi nam o wartość reszty z dzielenia
+liczby K przez N. Na przykład reszta z dzielenia 12 przez 7 to 5, możemy
+więc powiedzieć 12 modulo 7 to 5. Z kolei 10 modulo 5 wynosi zero, bo
+10 dzieli się przez 5. Dla dodatnich liczb K i N, reszta z dzielenia K przez N
+zawsze mieści się w przedziale 0..(N-1).
+
+Możemy się teraz zastanowić czy istnieje jakiś sposób na zmuszenie
+naszego kalkulatora do wykonania odejmowania.
+Dla uproszczenia założymy że nasz kalkulator ma trzycyfrowy wyświetlacz.
+Wiemy, po wcześniejszej analizie, że z powodu zjawiska nadmiaru
+kalkulator pokaże nam 000 gdy tylko obliczana suma osiągnie wartość 1000.
+Na przykład: 001 + 999 = 000. Zastanówmy się teraz co się stanie 
+gdy dodamy 050 + 999 = 049 + 1000 = 049. Wygląda na to że udało nam
+się wykonać odejmowanie 50 - 1 = 49. Metodę to da się uogólnić,
+załóżmy że chcemy odjąć od liczby x, liczbę y (x >= y). 
+Możemy to zrobić dodając na naszym kalkulatorze liczby x i (1000 - y):
+x + (1000 - y) = (x - y) + y + (1000 - y) = (x - y) + 1000 = x - y
+Widzimy że liczba (1000 - y) "pożycza" brakujące do nadmiaru y jedynek od
+liczby x.
+
+TODO: przykłady
+
+Jeżeli zmrużymy teraz oczy, to być może uda nam się zauważyć pewną
+analogię pomiędzy liczbą 999 a -1. Po pierwsze
+1 + 999 = 0 vs 1 + (-1) = 0,
+co więcej (-1) + (-1) = (-2), w wypadku 999 będzie to
+999 + 999 = 998,
+a liczba 998 ma to do siebie że 998 + 2 = 0, podobnie jak -2!
+Jak się za chwilę przekonamy to nie przypadek, liczby 999 i -1 łączy
+prosta zależność obie dają te same reszty modulo 1000.
+
+NOTE: Umiemy obliczać reszty z dzielenia dla liczb dodatnich.
+Żeby obliczyć resztę z dzielenia dla liczby ujemnej, musimy 
+skorzystać z następującej zależności: Mówimy że liczby A i B mają
+tą samą resztę z dzielenia modulo N jeżeli istnieje liczba 
+całkowita k taka że:
+A - B = kN
+Na przykład 999 - (-1) = 1000 = 1*1000 a więc liczby (-1) i
+999 mają tą samą resztę z dzielenia modulo N, podobnie liczby (-2) i 998.
+O liczbach które mają taką samą resztę z dzielenia modulo N,
+mówimy że przystają do siebie. Matematycy piszą w tym wypadku:
+A == B (mod N)
+co czytamy "A przystaje do B modulo N".
+Przekładając to na prosty język, jeżeli chcemy obliczyć resztę z
+dzielenia modulo N dla liczby ujemnej, to powinniśmy
+kolejno dodawać do niej N aż otrzymamy liczbę dodatnią,
+liczba ta będzie szukaną resztą.
+Przykład:
+-7 mod 3, -7 + 3 = -4, -4 + 3 = -1, -1 + 3 = 2
+Szukana reszta to 2. Zauważmy (-7) - 2 = -9 = (-3) * 3.
+
+Kontynuując naszą analogie, zobaczmy co się stanie jeżeli
+utożsamimy liczbę 999 z -1, 998 z -2, i ogólnie 1000 - x z liczbą (-x).
+Oczywiście chcielibyśmy mieć do dyspozycji również liczby dodatnie.
+Żeby to osiągnąć liczby będziemy rezerwować zaczynając od zera:
+    0
+  1 0 999(-1)
+2 1 0 999(-1) 998(-2)
+\dots
+499 \dots 2 1 0 999(-1) 998(-2) \dots 501(-499)
+Okazuje się że kolejną liczbą graniczną będzie liczba 500, która ma tą
+właściwość że 1000 - 500 = 500, jest więc ona pewnym odpowiednikiem zera
+bo 1000 - 0 = 1000 = 0, lub ogólnie 1000 - x = x.
+Na razie pominiemy 500 w naszych rozważaniach.
+
+TODO: PIC licznik, gość zakłada okulary z napisem U10,
+widzi liczby dodatnie i ujemne, zdejmuje okulary widzi liczby
+dziesiętne.
+
+Powyższy sposób reprezentacji liczb dodatnich i ujemnych będziemy
+nazywać systemem uzupełnień do dziesięciu, w skrócie U10.
+Dalej dla uniknięcia nieporozumień będziemy pisać
+liczba 034_U10 (zwróć uwagę na index U10) jeżeli będziemy mówić o liczbie 34
+zapisanej w kodowaniu U10. Przykładowo stan licznika 999 może reprezentować
+liczbę 999 w systemie dziesiętnym lub liczbę -1_U10 w kodowaniu U10. 
+
+Nasze pierwsze spostrzeżenie jest takie że bardzo prosto odróżnić
+liczby dodatnie od ujemnych. Liczby dodanie mają w reprezentacji dziesiętnej
+pierwszą cyfrę równą 0, 1, 2, 3 lub 4. 
+Liczby ujemny rozpoczynają się cyframi 5, 6, 7, 8 i 9.
+Równie prosto możemy zanegować liczbę, wystarczy odjąć jej wartość 
+w reprezentacji dziesiętnej od tysiąca. Na przykład:
+-(3_U10) = -(3) = 1000 - 3 = 997 = (-3)_U10
+i analogicznie:
+(-3)_U10 = -997 = 1000 - 997 = 3 = 3_U10
+
+Dodawanie liczb dodaniach których suma jest mniejsza niż 500 nie
+sprawia nam problemu, jeżeli suma przekracza 500 pojawia się nadmiar i wynik
+okazuje się być ujemny. 
+Dodanie dwóch liczb ujemnych również zachowuje się poprawnie
+o ile suma nie będzie niższa niż -499 (a tak naprawdę -500):
+
+(-x)_U10 + (-y)_U10 = (1000 - x) + (1000 - y) = 1000 + 1000 - (x + y)) =
+= 1000 + (1000 - (x + y)) = 1000 - (x + y) = (-(x + y))_U10
+
+bo jak pamiętamy (1000 + x) = x na naszym kalkulatorze.
+
+Gdy suma dodawanych liczb ujemnych spada poniżej -500, pojawia się
+nieznane nam jeszcze zjawisko niedomiaru (ang. underflow),
+które skutkuje "przekręceniem się licznika w dół" i wynikowa sumą która
+jest dodatnia.
+TODO: Licznik przekręca się w dół -499 -> -500 -> 499 -> 498
+
+Sprawdzenie że suma liczby dodatniej i ujemnej również jest poprawna,
+o ile różnica mieści się z zakresie liczb reprezentowanych przez U10
+pozostawiamy jako ćwiczenie dla czytelnika:
+x_U10 + (-y)_U10 = x + (1000 - y) = ...
+
+Mają zdefiniowaną negację i dodawanie w U10, możemy zdefiniować
+odejmowanie jako:
+x_U10 - y_U10 = x_U10 + (-y_U10)
+Czyli gdy chcemy odjąć dwie liczby x i y, w reprezentacji U10
+to najpierw negujemy y, a następnie dodajemy do tak otrzymanej wartości
+liczbę x.
+Przykład: z reprezentacją dziesiętną
+
+Aby lepiej zrozumieć różnicę w reprezentacji dziesiętnej i U10,
+wykonajmy kilka ćwiczeń zanim przejdziemy dalej.
+TODO
 
 
 % Plan
-% 
+% - System dziesiętny 
+% - System binarny
+% - System trójkowy
+% - Zbilansowany trójkowy
+% - Bity i bajty, pamięć komputera, MSB, LSB, big/little endian
+% - Operacje bitowe (i sztuczki jak zamiana zmiennych z XOR)
+% - Arytmetyka za pomocą operacji bitowych, szybkie potęgowanie
